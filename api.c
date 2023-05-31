@@ -34,7 +34,6 @@ char	think(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 			return (printf("%ldms %d died\n", new_timestamp, (*philo).num), ZERO);
 		i += TEN_KILO;
 	}
-	*timestamp = new_timestamp;
 	return (ONE);
 }
 
@@ -62,7 +61,6 @@ char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 			return (printf("%ldms %d died\n", new_timestamp, (*philo).num), ZERO);
 		i += TEN_KILO;
 	}
-	*timestamp = new_timestamp;
 	return (ONE);
 }
 
@@ -82,13 +80,14 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 			return (pthread_mutex_unlock(&((*vars).death_mutex)), ZERO);
 		pthread_mutex_unlock(&((*vars).death_mutex));
 		usleep(TEN_KILO);
+		gettimeofday(&t, NULL);//TODO:
+		new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
+		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
+		+ (t.tv_usec / (size_t)KILO);
+		if (new_timestamp - *timestamp >= *((*vars).params + ONE))
+			return (printf("%ldms %d died\n", new_timestamp, (*philo).num), ZERO);
 		i += TEN_KILO;
 	}
-	gettimeofday(&t, NULL);//TODO:
-	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
-	+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
-	+ (t.tv_usec / (size_t)KILO);
-	*timestamp = new_timestamp;
 	return (ONE);
 }
 

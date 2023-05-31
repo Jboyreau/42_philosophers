@@ -30,7 +30,7 @@ char	print_fork(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
 	}
 	printf("%ldms %d has taken a fork\n", new_timestamp, id);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
-	return (*timestamp = new_timestamp, ONE);
+	return (ONE);
 }
 
 char	print_eat(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
@@ -82,7 +82,7 @@ char	print_sleep(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
 	}
 	printf("%ldms %d is sleeping\n", new_timestamp, id);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
-	return (*timestamp = new_timestamp, ONE);
+	return (ONE);
 }
 
 char	print_think(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
@@ -108,5 +108,5 @@ char	print_think(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
 	}
 	printf("%ldms %d is thinking\n", new_timestamp, id);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
-	return (*timestamp = new_timestamp, ONE);
+	return (ONE);
 }
