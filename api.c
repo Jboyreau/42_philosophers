@@ -32,9 +32,9 @@ char	think(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		+ (t.tv_usec / (size_t)KILO);
 		if (new_timestamp - *timestamp >= *((*vars).params + ONE))
 			return (printf("%ldms %d died\n", new_timestamp, (*philo).num), ZERO);
-		*timestamp = new_timestamp;
 		i += TEN_KILO;
 	}
+	*timestamp = new_timestamp;
 	return (ONE);
 }
 
@@ -60,9 +60,9 @@ char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		+ (t.tv_usec / (size_t)KILO);
 		if (new_timestamp - *timestamp >= *((*vars).params + ONE))
 			return (printf("%ldms %d died\n", new_timestamp, (*philo).num), ZERO);
-		*timestamp = new_timestamp;
 		i += TEN_KILO;
 	}
+	*timestamp = new_timestamp;
 	return (ONE);
 }
 
