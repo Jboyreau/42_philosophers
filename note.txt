@@ -1,0 +1,2 @@
+gcc -Wall -Wextra -Werror -g3 *.c -lpthread
+valgrind --tool=helgrind ./a.out 5 410 200 200 5
