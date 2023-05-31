@@ -57,6 +57,5 @@ char	parsing(char **argv, t_alloc_vars *vars, int argc);
 char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
-char	think(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 
 # endif

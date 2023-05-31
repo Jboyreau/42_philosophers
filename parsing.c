@@ -111,7 +111,7 @@ char	parsing(char **argv, t_alloc_vars *vars, int argc)
 	j = ZERO;
 	while (++j < INDEX_LAST_DURATION)
 		*((*vars).micros + j - ONE) = KILO * (*((*vars).params + j));
-	*((*vars).micros + TIME_THINK) = *((*vars).micros + TIME_EAT);
+	*((*vars).micros + TIME_THINK) = ZERO;
 	if (*((*vars).params) < MIN_PHILO)
 		return (the_single_one_must_die(vars), ZERO);
 	return (ONE);

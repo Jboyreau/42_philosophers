@@ -14,11 +14,14 @@
 #define LOOP_START -1
 #define ONE 1
 
-static char	rep(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
+static char	rep(t_alloc_vars *vars, t_philo *philo, size_t *timestamp,
+unsigned int i)
 {
 	if (take_fork(vars, philo, timestamp) == ZERO)
 		return (ZERO);
-	if (think(vars, philo, timestamp) == ZERO)
+	if (i >= *((*vars).params + NB_EAT))
+		return (ZERO);
+	if (print_think((*philo).num, vars, timestamp) == ZERO)
 		return (ZERO);
 	if (sleep_(vars, philo, timestamp) == ZERO)
 		return (ZERO);
@@ -40,14 +43,17 @@ static void	*start(void *arg)
 	timestamp = (KILO * t.tv_sec) + (t.tv_usec / (size_t)KILO);
 	if ((*vars).argc == SIX)
 	{
-		while (++i < *((*vars).params + NB_EAT))
-			if (rep(vars, philo, &timestamp) == ZERO)
+		while (1)
+			if (rep(vars, philo, &timestamp, ++i) == ZERO)
 				return (NULL);
 	}
 	else
+	{
+		*((*vars).params + NB_EAT) = ONE;
 		while (1)
-			if (rep(vars, philo, &timestamp) == ZERO)
+			if (rep(vars, philo, &timestamp, ZERO) == ZERO)
 				return (NULL);
+	}
 	return (NULL);
 }
 
