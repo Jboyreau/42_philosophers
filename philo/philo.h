@@ -33,7 +33,7 @@ typedef struct philosopher
 	unsigned int	eat_count;
 	pthread_t		id;
 	pthread_mutex_t	fork;
-	pthread_mutex_t	next_fork;
+	pthread_mutex_t	*next_fork;
 	void			*vars;
 }	t_philo;
 

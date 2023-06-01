@@ -95,12 +95,12 @@ static void	fork_point(t_alloc_vars *vars, void *start(void *param))
 	(*vars).nb_fork = i;
 	i = LOOP_START;
 	(*((*vars).philos + index_last_fork)).num = index_last_fork + ONE;
-	(*((*vars).philos + index_last_fork)).next_fork = (*((*vars).philos)).fork;
+	(*((*vars).philos + index_last_fork)).next_fork = &(*((*vars).philos)).fork;
 	(*(((*vars).philos) + index_last_fork)).vars = vars;
 	while (++i < index_last_fork)
 	{
 		(*((*vars).philos + i)).num = i + ONE;
-		(*((*vars).philos + i)).next_fork = (*(((*vars).philos) + i + 1)).fork;
+		(*((*vars).philos + i)).next_fork = &(*(((*vars).philos) + i + 1)).fork;
 		(*(((*vars).philos) + i)).vars = vars;
 		if (pthread_create(&((*(((*vars).philos) + i)).id), NULL, start,
 				&(*((*vars).philos + i))))

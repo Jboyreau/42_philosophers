@@ -96,12 +96,14 @@ char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	pthread_mutex_lock(&((*philo).fork));
 	if (print_fork((*philo).num, vars) == ZERO)
 		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);
-	pthread_mutex_lock(&((*philo).next_fork));
+	pthread_mutex_lock(((*philo).next_fork));
+	if (print_fork((*philo).num, vars) == ZERO)
+		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);
 	if (eat(vars, philo, timestamp) == ZERO)
 	{
-		pthread_mutex_unlock(&((*philo).next_fork));
+		pthread_mutex_unlock(((*philo).next_fork));
 		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);
 	}
-	pthread_mutex_unlock(&((*philo).next_fork));
+	pthread_mutex_unlock(((*philo).next_fork));
 	return (pthread_mutex_unlock(&((*philo).fork)), ONE);
 }
