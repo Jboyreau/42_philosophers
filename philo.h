@@ -30,6 +30,7 @@ typedef struct timeval t_timeval;
 typedef struct philosopher
 {
 	unsigned int	num;
+	unsigned int	eat_count;
 	pthread_t		id;
 	pthread_mutex_t	fork;
 	pthread_mutex_t	next_fork;

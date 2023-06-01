@@ -14,12 +14,11 @@
 #define LOOP_START -1
 #define ONE 1
 
-static char	rep(t_alloc_vars *vars, t_philo *philo, size_t *timestamp,
-unsigned int i)
+static char	rep(t_alloc_vars *vars, t_philo *philo, size_t *timestamp, char m)
 {
 	if (take_fork(vars, philo, timestamp) == ZERO)
 		return (ZERO);
-	if (i >= *((*vars).params + NB_EAT))
+	if ((*philo).eat_count >= *((*vars).params + NB_EAT) && m == ONE)
 		return (ZERO);
 	if (print_think((*philo).num, vars, timestamp) == ZERO)
 		return (ZERO);
@@ -33,23 +32,21 @@ static void	*start(void *arg)
 	t_philo			*philo;
 	t_alloc_vars	*vars;
 	t_timeval		t;
-	unsigned int	i;
 	size_t			timestamp;
 
 	philo = (t_philo *)arg;
 	vars = (*philo).vars;
-	i = LOOP_START;
 	gettimeofday(&t, NULL);
 	timestamp = (KILO * t.tv_sec) + (t.tv_usec / (size_t)KILO);
 	if ((*vars).argc == SIX)
 	{
+		(*philo).eat_count = ZERO;
 		while (1)
-			if (rep(vars, philo, &timestamp, ++i) == ZERO)
+			if (rep(vars, philo, &timestamp, ONE) == ZERO)
 				return (NULL);
 	}
 	else
 	{
-		*((*vars).params + NB_EAT) = ONE;
 		while (1)
 			if (rep(vars, philo, &timestamp, ZERO) == ZERO)
 				return (NULL);
