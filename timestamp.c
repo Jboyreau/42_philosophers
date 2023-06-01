@@ -41,30 +41,25 @@ void pn(size_t n)
 		power /= (size_t)TEN;
 	}
 	*(digits + (++i)) = ZERO;
-	write(1, digits, i);
+	write(ONE, digits, i);
 }
 
-char	print_fork(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
+char	print_fork(unsigned int id, t_alloc_vars *vars)
 {
 	t_timeval		t;
 	size_t	new_timestamp;
 
-	pthread_mutex_lock(&((*vars).mutex_stdout));
 	pthread_mutex_lock(&((*vars).death_mutex));
 	if ((*vars).death)
 	{
 		pthread_mutex_unlock(&((*vars).death_mutex));
-		return (pthread_mutex_unlock(&((*vars).mutex_stdout)), ZERO);
+		return (ZERO);
 	}
 	(pthread_mutex_unlock(&((*vars).death_mutex)), gettimeofday(&t, NULL));
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 	+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 	+ (t.tv_usec / (size_t)KILO);
-	if (new_timestamp - *timestamp >= *((*vars).params + ONE))
-	{
-		printf("%ldms %d died\n", new_timestamp, id);
-		return (pthread_mutex_unlock(&((*vars).mutex_stdout)), ZERO);
-	}
+	pthread_mutex_lock(&((*vars).mutex_stdout));
 	(pn(new_timestamp), write(ONE, "ms ", THREE), pn(id));
 	write(ONE," has taken a fork\n", EIGHTEEN);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
@@ -76,18 +71,18 @@ char	print_eat(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
 	t_timeval		t;
 	size_t	new_timestamp;
 
-	pthread_mutex_lock(&((*vars).mutex_stdout));
 	pthread_mutex_lock(&((*vars).death_mutex));
 	if ((*vars).death)
 	{
 		pthread_mutex_unlock(&((*vars).death_mutex));
-		return (pthread_mutex_unlock(&((*vars).mutex_stdout)), ZERO);
+		return (ZERO);
 	}
 	(pthread_mutex_unlock(&((*vars).death_mutex)), gettimeofday(&t, NULL));
+	pthread_mutex_lock(&((*vars).mutex_stdout));
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 	+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 	+ (t.tv_usec / (size_t)KILO);
-	if (new_timestamp - *timestamp >= *((*vars).params + ONE))
+	if (new_timestamp - *timestamp > *((*vars).params + ONE))
 	{
 		printf("%ldms %d died\n", new_timestamp, id);
 		return (pthread_mutex_unlock(&((*vars).mutex_stdout)), ZERO);
@@ -98,12 +93,11 @@ char	print_eat(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
 	return (*timestamp = new_timestamp, ONE);
 }
 
-char	print_sleep(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
+char	print_sleep(unsigned int id, t_alloc_vars *vars)
 {
 	t_timeval		t;
 	size_t	new_timestamp;
 
-	pthread_mutex_lock(&((*vars).mutex_stdout));
 	pthread_mutex_lock(&((*vars).death_mutex));
 	if ((*vars).death)
 	{
@@ -114,23 +108,18 @@ char	print_sleep(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 	+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 	+ (t.tv_usec / (size_t)KILO);
-	if (new_timestamp - *timestamp >= *((*vars).params + ONE))
-	{
-		printf("%ldms %d died\n", new_timestamp, id);
-		return (pthread_mutex_unlock(&((*vars).mutex_stdout)), ZERO);
-	}
+	pthread_mutex_lock(&((*vars).mutex_stdout));
 	(pn(new_timestamp), write(ONE, "ms ", THREE), pn(id));
 	write(ONE," is sleeping\n", THIRTEEN);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
 	return (ONE);
 }
 
-char	print_think(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
+char	print_think(unsigned int id, t_alloc_vars *vars)
 {
 	t_timeval		t;
 	size_t	new_timestamp;
 
-	pthread_mutex_lock(&((*vars).mutex_stdout));
 	pthread_mutex_lock(&((*vars).death_mutex));
 	if ((*vars).death)
 	{
@@ -141,11 +130,7 @@ char	print_think(unsigned int id, t_alloc_vars *vars, size_t *timestamp)
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 	+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 	+ (t.tv_usec / (size_t)KILO);
-	if (new_timestamp - *timestamp >= *((*vars).params + ONE))
-	{
-		printf("%ldms %d died\n", new_timestamp, id);
-		return (pthread_mutex_unlock(&((*vars).mutex_stdout)), ZERO);
-	}
+	pthread_mutex_lock(&((*vars).mutex_stdout));
 	(pn(new_timestamp), write(ONE, "ms ", THREE), pn(id));
 	write(ONE," is thinking\n", THIRTEEN);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));

@@ -20,9 +20,9 @@ static char	rep(t_alloc_vars *vars, t_philo *philo, size_t *timestamp, char m)
 		return (ZERO);
 	if ((*philo).eat_count >= *((*vars).params + NB_EAT) && m == ONE)
 		return (ZERO);
-	if (print_think((*philo).num, vars, timestamp) == ZERO)
-		return (ZERO);
 	if (sleep_(vars, philo, timestamp) == ZERO)
+		return (ZERO);
+	if (print_think((*philo).num, vars) == ZERO)
 		return (ZERO);
 	return (ONE);
 }

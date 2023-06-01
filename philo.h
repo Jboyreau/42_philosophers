@@ -50,10 +50,10 @@ typedef struct allocated_vars
 	t_philo					*philos;
 }	t_alloc_vars;
 
-char	print_fork(unsigned int id, t_alloc_vars *vars, size_t *timestamp);
-char	print_sleep(unsigned int id, t_alloc_vars *vars, size_t *timestamp);
+char	print_fork(unsigned int id, t_alloc_vars *vars);
+char	print_sleep(unsigned int id, t_alloc_vars *vars);
 char	print_eat(unsigned int id, t_alloc_vars *vars, size_t *timestamp);
-char	print_think(unsigned int id, t_alloc_vars *vars, size_t *timestamp);
+char	print_think(unsigned int id, t_alloc_vars *vars);
 char	parsing(char **argv, t_alloc_vars *vars, int argc);
 char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
