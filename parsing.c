@@ -19,7 +19,7 @@
 #define KILO 1000
 #define CHAR_ZERO 48
 
-static char		check_overflow(char *s)
+static char	check_overflow(char *s)
 {
 	static char	*max_int = "4294967295";
 	int			s_len;
@@ -50,7 +50,7 @@ static size_t	ft_atolu(char *s)
 {
 	int			i;
 	size_t		sum;
-	
+
 	i = LOOP_START;
 	sum = 0;
 	while (*(s + (++i)) > LIM1 && *(s + i) < LIM2)

@@ -14,7 +14,7 @@
 #define TEN 10
 #define EIGHT 8
 #define NINE 9
-#define	THIRTEEN 13
+#define THIRTEEN 13
 
 static char	check_death(t_alloc_vars *vars, t_philo *philo,
 size_t new_timestamp, size_t timestamp)
@@ -52,13 +52,13 @@ char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		pthread_mutex_unlock(&((*vars).death_mutex));
 		gettimeofday(&t, NULL);
 		new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
-		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
-		+ (t.tv_usec / (size_t)KILO);
+			+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
+			+ (t.tv_usec / (size_t)KILO);
 		if (check_death(vars, philo, new_timestamp, *timestamp) == ZERO)
 			return (ZERO);
 	}
 	usleep(*((*vars).micros + TIME_SLEEP) - ((end << THIRTEEN)
-	+ (end << TEN) + (end << NINE) + (end << EIGHT) + (end << FOUR)));
+			+ (end << TEN) + (end << NINE) + (end << EIGHT) + (end << FOUR)));
 	return (ONE);
 }
 
@@ -80,13 +80,13 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 			return (pthread_mutex_unlock(&((*vars).death_mutex)), ZERO);
 		(pthread_mutex_unlock(&((*vars).death_mutex)), gettimeofday(&t, NULL));
 		new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
-		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
-		+ (t.tv_usec / (size_t)KILO);
+			+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
+			+ (t.tv_usec / (size_t)KILO);
 		if (check_death(vars, philo, new_timestamp, *timestamp) == ZERO)
 			return (ZERO);
 	}
 	usleep(*((*vars).micros + TIME_EAT) - ((end << THIRTEEN)
-	+ (end << TEN) + (end << NINE) + (end << EIGHT) + (end << FOUR)));
+			+ (end << TEN) + (end << NINE) + (end << EIGHT) + (end << FOUR)));
 	++((*philo).eat_count);
 	return (ONE);
 }

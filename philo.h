@@ -1,15 +1,15 @@
 #ifndef PHILO_H
 # define PHILO_H
 
-enum params
+enum e_params
 {
-	TIME_DEATH,//0
-	TIME_EAT,//1
-	TIME_SLEEP,//2
-	TIME_THINK,//3
+	TIME_DEATH,
+	TIME_EAT,
+	TIME_SLEEP,
+	TIME_THINK,
 };
 
-enum bits
+enum e_bits
 {
 	A = 3,
 	B = 5,
@@ -25,7 +25,7 @@ typedef struct timevalue
 	size_t	u;
 }	t_tv;
 
-typedef struct timeval t_timeval;
+typedef struct timeval	t_timeval;
 
 typedef struct philosopher
 {
@@ -59,4 +59,4 @@ char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 
-# endif
+#endif
