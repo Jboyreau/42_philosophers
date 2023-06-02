@@ -60,13 +60,11 @@ static void	destroy(t_alloc_vars *vars, char mode)
 {
 	static size_t	index = LOOP_START;
 
-	printf("enter\n");
 	if (mode == MODE_JOIN)
 	{
 		while (++index < (*vars).nb_threads)
 			pthread_detach((*((*vars).philos + index)).id);
 	}
-	printf("exit\n");
 	if ((*vars).params)
 		free((*vars).params);
 	if ((*vars).micros)
