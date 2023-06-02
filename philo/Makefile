@@ -6,7 +6,7 @@ SRC=api.c main.c\
 OBJ=api.o main.o\
 	parsing.o timestamp.o utils.o\
 
-CPPFLAGS= -Wall -Wextra -Werror
+CPPFLAGS= -g3 -Wall -Wextra -Werror
 
 CFLAGS= -lpthread
 

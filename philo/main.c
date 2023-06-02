@@ -59,9 +59,15 @@ void	*start(void *arg)
 static void	destroy(t_alloc_vars *vars, char mode)
 {
 	static size_t	index = LOOP_START;
-
+	
 	if (mode == MODE_JOIN)
 	{
+		while (++index < (*vars).nb_fork)
+			pthread_mutex_destroy(&(*((*vars).philos + index)).fork);
+		pthread_mutex_destroy(&((*vars).mutex_end));
+		pthread_mutex_destroy(&((*vars).mutex_report));
+		pthread_mutex_destroy(&((*vars).mutex_stdout));
+		pthread_mutex_destroy(&((*vars).death_mutex));
 		while (++index < (*vars).nb_threads)
 			pthread_detach((*((*vars).philos + index)).id);
 	}
