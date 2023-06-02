@@ -16,9 +16,19 @@
 #define NINE 9
 #define THIRTEEN 13
 
-static char	check_death(t_alloc_vars *vars, t_philo *philo,
-size_t new_timestamp, size_t timestamp)
+static char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
 {
+	t_timeval	t;
+	size_t		new_timestamp;
+
+	pthread_mutex_lock(&((*vars).death_mutex));
+	if ((*vars).death)
+		return (pthread_mutex_unlock(&((*vars).death_mutex)), ZERO);
+	pthread_mutex_unlock(&((*vars).death_mutex));
+	gettimeofday(&t, NULL);
+	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
+		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
+		+ (t.tv_usec / (size_t)KILO);
 	pthread_mutex_lock(&((*vars).death_mutex));
 	if ((*vars).death)
 		return (pthread_mutex_unlock(&((*vars).death_mutex)), ZERO);
@@ -26,9 +36,11 @@ size_t new_timestamp, size_t timestamp)
 	if (new_timestamp - timestamp > *((*vars).params + ONE))
 	{
 		pthread_mutex_lock(&((*vars).mutex_stdout));
-		printf("%ldms %d died\n", new_timestamp, (*philo).num);
-		pthread_mutex_unlock(&((*vars).mutex_stdout));
-		return (ZERO);
+		pthread_mutex_lock(&((*vars).mutex_report));
+		(*vars).report = ONE;
+		pthread_mutex_unlock(&((*vars).mutex_report));
+		printf("%ldms %d died\n", new_timestamp - (*vars).ts, (*philo).num);
+		return (pthread_mutex_unlock(&((*vars).mutex_stdout)), ZERO);
 	}
 	return (ONE);
 }
@@ -37,8 +49,6 @@ char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 {
 	size_t		i;
 	size_t		end;
-	size_t		new_timestamp;
-	t_timeval	t;
 
 	if (print_sleep((*philo).num, vars) == ZERO)
 		return (ZERO);
@@ -46,15 +56,10 @@ char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	i = LOOP_START;
 	while (++i < end)
 	{
-		(usleep(TEN_KILO), pthread_mutex_lock(&((*vars).death_mutex)));
-		if ((*vars).death)
-			return (pthread_mutex_unlock(&((*vars).death_mutex)), ZERO);
-		pthread_mutex_unlock(&((*vars).death_mutex));
-		gettimeofday(&t, NULL);
-		new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
-			+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
-			+ (t.tv_usec / (size_t)KILO);
-		if (check_death(vars, philo, new_timestamp, *timestamp) == ZERO)
+		if (check_death(vars, philo, *timestamp) == ZERO)
+			return (ZERO);
+		usleep(TEN_KILO);
+		if (check_death(vars, philo, *timestamp) == ZERO)
 			return (ZERO);
 	}
 	usleep(*((*vars).micros + TIME_SLEEP) - ((end << THIRTEEN)
@@ -66,8 +71,6 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 {
 	size_t		i;
 	size_t		end;
-	size_t		new_timestamp;
-	t_timeval	t;
 
 	if (print_eat((*philo).num, vars, timestamp) == ZERO)
 		return (ZERO);
@@ -75,14 +78,10 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	i = LOOP_START;
 	while (++i < end)
 	{
-		(usleep(TEN_KILO), pthread_mutex_lock(&((*vars).death_mutex)));
-		if ((*vars).death)
-			return (pthread_mutex_unlock(&((*vars).death_mutex)), ZERO);
-		(pthread_mutex_unlock(&((*vars).death_mutex)), gettimeofday(&t, NULL));
-		new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
-			+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
-			+ (t.tv_usec / (size_t)KILO);
-		if (check_death(vars, philo, new_timestamp, *timestamp) == ZERO)
+		if (check_death(vars, philo, *timestamp) == ZERO)
+			return (ZERO);
+		usleep(TEN_KILO);
+		if (check_death(vars, philo, *timestamp) == ZERO)
 			return (ZERO);
 	}
 	usleep(*((*vars).micros + TIME_EAT) - ((end << THIRTEEN)
@@ -98,7 +97,10 @@ char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);
 	pthread_mutex_lock(((*philo).next_fork));
 	if (print_fork((*philo).num, vars) == ZERO)
+	{
+		pthread_mutex_unlock(((*philo).next_fork));
 		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);
+	}
 	if (eat(vars, philo, timestamp) == ZERO)
 	{
 		pthread_mutex_unlock(((*philo).next_fork));

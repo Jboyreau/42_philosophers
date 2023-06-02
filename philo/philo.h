@@ -40,11 +40,16 @@ typedef struct philosopher
 typedef struct allocated_vars
 {
 	char					death;
+	char					report;
 	unsigned int			argc;
 	unsigned int			nb_fork;
 	unsigned int			nb_threads;
+	unsigned int			end;
+	size_t					ts;
 	pthread_mutex_t			mutex_stdout;
 	pthread_mutex_t			death_mutex;
+	pthread_mutex_t			mutex_report;
+	pthread_mutex_t			mutex_end;
 	unsigned int			*params;
 	size_t					*micros;
 	t_philo					*philos;
@@ -58,5 +63,7 @@ char	parsing(char **argv, t_alloc_vars *vars, int argc);
 char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
+void	check_end(t_alloc_vars *vars);
+void	inc_end(t_alloc_vars *vars);
 
 #endif

@@ -38,20 +38,22 @@ static void	*start(void *arg)
 	vars = (*philo).vars;
 	gettimeofday(&t, NULL);
 	timestamp = (KILO * t.tv_sec) + (t.tv_usec / (size_t)KILO);
+	if ((*philo).num == ONE)
+		(*vars).ts = timestamp;
+	else
+		usleep(ONE * (*philo).num);
 	if ((*vars).argc == SIX)
 	{
 		(*philo).eat_count = ZERO;
 		while (1)
 			if (rep(vars, philo, &timestamp, ONE) == ZERO)
-				return (NULL);
+				return (inc_end(vars), NULL);
+		return (inc_end(vars), NULL);
 	}
-	else
-	{
-		while (1)
-			if (rep(vars, philo, &timestamp, ZERO) == ZERO)
-				return (NULL);
-	}
-	return (NULL);
+	while (1)
+		if (rep(vars, philo, &timestamp, ZERO) == ZERO)
+			return (inc_end(vars), NULL);
+	return (inc_end(vars), NULL);
 }
 
 static void	destroy(t_alloc_vars *vars, char mode, char m1, char m2)
@@ -61,12 +63,7 @@ static void	destroy(t_alloc_vars *vars, char mode, char m1, char m2)
 	if (mode == MODE_JOIN)
 	{
 		while (++index < (*vars).nb_threads)
-		{
 			pthread_join((*((*vars).philos + index)).id, NULL);
-			pthread_mutex_lock(&((*vars).death_mutex));
-			(*vars).death = ONE;
-			pthread_mutex_unlock(&((*vars).death_mutex));
-		}
 	}
 	if ((*vars).params)
 		free((*vars).params);
@@ -105,7 +102,6 @@ static void	fork_point(t_alloc_vars *vars, void *start(void *param))
 		if (pthread_create(&((*(((*vars).philos) + i)).id), NULL, start,
 				&(*((*vars).philos + i))))
 			(*vars).nb_threads = ++i;
-		usleep(10);
 	}
 	pthread_create(&((*(((*vars).philos) + i)).id), NULL, start,
 		&(*((*vars).philos + i)));
@@ -123,6 +119,13 @@ int	main(int argc, char **argv)
 		return (destroy(&vars, MODE_DESTROY, ZERO, ZERO), EXIT_FAILURE);
 	if (pthread_mutex_init(&(vars.death_mutex), NULL))
 		return (destroy(&vars, MODE_DESTROY, ZERO, ONE), EXIT_FAILURE);
+	if (pthread_mutex_init(&(vars.mutex_report), NULL))
+		return (destroy(&vars, MODE_DESTROY, ZERO, ONE), EXIT_FAILURE);
+	if (pthread_mutex_init(&(vars.mutex_end), NULL))
+		return (destroy(&vars, MODE_DESTROY, ZERO, ONE), EXIT_FAILURE);
 	fork_point(&vars, &start);
-	return (destroy(&vars, MODE_JOIN, ONE, ONE), EXIT_SUCCESS);
+	check_end(&vars);
+	destroy(&vars, MODE_JOIN, ONE, ONE);
+	pthread_mutex_destroy(&(vars.mutex_report));
+	return (pthread_mutex_destroy(&(vars.mutex_report)), EXIT_SUCCESS);
 }
