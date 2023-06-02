@@ -65,5 +65,9 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 void	check_end(t_alloc_vars *vars);
 void	inc_end(t_alloc_vars *vars);
+void	*start(void *arg);
+void	*start_(void *arg);
+void	thread_creation(t_alloc_vars *vars, unsigned int i);
+char	take_fork_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 
 #endif

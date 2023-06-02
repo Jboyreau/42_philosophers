@@ -21,10 +21,6 @@ static char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
 	t_timeval	t;
 	size_t		new_timestamp;
 
-	pthread_mutex_lock(&((*vars).death_mutex));
-	if ((*vars).death)
-		return (pthread_mutex_unlock(&((*vars).death_mutex)), ZERO);
-	pthread_mutex_unlock(&((*vars).death_mutex));
 	gettimeofday(&t, NULL);
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
@@ -35,12 +31,13 @@ static char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
 	pthread_mutex_unlock(&((*vars).death_mutex));
 	if (new_timestamp - timestamp > *((*vars).params + ONE))
 	{
-		pthread_mutex_lock(&((*vars).mutex_stdout));
 		pthread_mutex_lock(&((*vars).mutex_report));
 		(*vars).report = ONE;
 		pthread_mutex_unlock(&((*vars).mutex_report));
+		pthread_mutex_lock(&((*vars).mutex_stdout));
 		printf("%ldms %d died\n", new_timestamp - (*vars).ts, (*philo).num);
-		return (pthread_mutex_unlock(&((*vars).mutex_stdout)), ZERO);
+		pthread_mutex_unlock(&((*vars).mutex_stdout));
+		return (ZERO);
 	}
 	return (ONE);
 }
@@ -93,9 +90,13 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 {
 	pthread_mutex_lock(&((*philo).fork));
+	if (check_death(vars, philo, *timestamp) == ZERO)
+		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);
 	if (print_fork((*philo).num, vars) == ZERO)
 		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);
 	pthread_mutex_lock(((*philo).next_fork));
+	if (check_death(vars, philo, *timestamp) == ZERO)
+		return (ZERO, pthread_mutex_unlock(((*philo).next_fork)));
 	if (print_fork((*philo).num, vars) == ZERO)
 	{
 		pthread_mutex_unlock(((*philo).next_fork));
@@ -108,4 +109,28 @@ char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	}
 	pthread_mutex_unlock(((*philo).next_fork));
 	return (pthread_mutex_unlock(&((*philo).fork)), ONE);
+}
+
+char	take_fork_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
+{
+	pthread_mutex_lock(((*philo).next_fork));
+	if (check_death(vars, philo, *timestamp) == ZERO)
+		return (pthread_mutex_unlock(((*philo).next_fork)), ZERO);
+	if (print_fork((*philo).num, vars) == ZERO)
+		return (pthread_mutex_unlock(((*philo).next_fork)), ZERO);
+	pthread_mutex_lock(&((*philo).fork));
+	if (check_death(vars, philo, *timestamp) == ZERO)
+		return (pthread_mutex_lock(&((*philo).fork)), ZERO);
+	if (print_fork((*philo).num, vars) == ZERO)
+	{
+		pthread_mutex_unlock(&((*philo).fork));
+		return (pthread_mutex_unlock(((*philo).next_fork)), ZERO);
+	}
+	if (eat(vars, philo, timestamp) == ZERO)
+	{
+		pthread_mutex_unlock(&((*philo).fork));
+		return (pthread_mutex_unlock(((*philo).next_fork)), ZERO);
+	}
+	pthread_mutex_unlock(&((*philo).fork));
+	return (pthread_mutex_unlock(((*philo).next_fork)), ONE);
 }

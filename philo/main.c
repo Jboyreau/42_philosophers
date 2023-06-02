@@ -27,7 +27,7 @@ static char	rep(t_alloc_vars *vars, t_philo *philo, size_t *timestamp, char m)
 	return (ONE);
 }
 
-static void	*start(void *arg)
+void	*start(void *arg)
 {
 	t_philo			*philo;
 	t_alloc_vars	*vars;
@@ -56,31 +56,26 @@ static void	*start(void *arg)
 	return (inc_end(vars), NULL);
 }
 
-static void	destroy(t_alloc_vars *vars, char mode, char m1, char m2)
+static void	destroy(t_alloc_vars *vars, char mode)
 {
 	static size_t	index = LOOP_START;
 
+	printf("enter\n");
 	if (mode == MODE_JOIN)
 	{
 		while (++index < (*vars).nb_threads)
 			pthread_join((*((*vars).philos + index)).id, NULL);
 	}
+	printf("exit\n");
 	if ((*vars).params)
 		free((*vars).params);
 	if ((*vars).micros)
 		free((*vars).micros);
-	if (m1 == ONE)
-		pthread_mutex_destroy(&((*vars).death_mutex));
-	if (m2 == ONE)
-		pthread_mutex_destroy(&((*vars).mutex_stdout));
-	index = LOOP_START;
-	while (++index < (*vars).nb_fork)
-		pthread_mutex_destroy(&((*(((*vars).philos) + index)).fork));
 	if ((*vars).philos)
 		free((*vars).philos);
 }
 
-static void	fork_point(t_alloc_vars *vars, void *start(void *param))
+static void	fork_point(t_alloc_vars *vars)
 {
 	static unsigned int	i = LOOP_START;
 	unsigned int		index_last_fork;
@@ -99,13 +94,9 @@ static void	fork_point(t_alloc_vars *vars, void *start(void *param))
 		(*((*vars).philos + i)).num = i + ONE;
 		(*((*vars).philos + i)).next_fork = &(*(((*vars).philos) + i + 1)).fork;
 		(*(((*vars).philos) + i)).vars = vars;
-		if (pthread_create(&((*(((*vars).philos) + i)).id), NULL, start,
-				&(*((*vars).philos + i))))
-			(*vars).nb_threads = ++i;
+		thread_creation(vars, i);
 	}
-	pthread_create(&((*(((*vars).philos) + i)).id), NULL, start,
-		&(*((*vars).philos + i)));
-		(*vars).nb_threads = ++i;
+	thread_creation(vars, i);
 }
 
 int	main(int argc, char **argv)
@@ -113,19 +104,18 @@ int	main(int argc, char **argv)
 	static t_alloc_vars		vars;
 
 	if (parsing(argv, &vars, argc) == ZERO)
-		return (destroy(&vars, MODE_DESTROY, ZERO, ZERO), EXIT_FAILURE);
+		return (destroy(&vars, MODE_DESTROY), EXIT_FAILURE);
 	vars.argc = argc;
 	if (pthread_mutex_init(&(vars.mutex_stdout), NULL))
-		return (destroy(&vars, MODE_DESTROY, ZERO, ZERO), EXIT_FAILURE);
+		return (destroy(&vars, MODE_DESTROY), EXIT_FAILURE);
 	if (pthread_mutex_init(&(vars.death_mutex), NULL))
-		return (destroy(&vars, MODE_DESTROY, ZERO, ONE), EXIT_FAILURE);
+		return (destroy(&vars, MODE_DESTROY), EXIT_FAILURE);
 	if (pthread_mutex_init(&(vars.mutex_report), NULL))
-		return (destroy(&vars, MODE_DESTROY, ZERO, ONE), EXIT_FAILURE);
+		return (destroy(&vars, MODE_DESTROY), EXIT_FAILURE);
 	if (pthread_mutex_init(&(vars.mutex_end), NULL))
-		return (destroy(&vars, MODE_DESTROY, ZERO, ONE), EXIT_FAILURE);
-	fork_point(&vars, &start);
+		return (destroy(&vars, MODE_DESTROY), EXIT_FAILURE);
+	fork_point(&vars);
 	check_end(&vars);
-	destroy(&vars, MODE_JOIN, ONE, ONE);
-	pthread_mutex_destroy(&(vars.mutex_report));
-	return (pthread_mutex_destroy(&(vars.mutex_report)), EXIT_SUCCESS);
+	destroy(&vars, MODE_JOIN);
+	return (EXIT_SUCCESS);
 }
