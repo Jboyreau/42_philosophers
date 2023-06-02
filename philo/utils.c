@@ -88,11 +88,11 @@ void	thread_creation(t_alloc_vars *vars, unsigned int i)
 	if ((*((*vars).philos + i)).num == (*vars).nb_fork)
 	{
 		if (pthread_create(&((*(((*vars).philos) + i)).id), NULL, start_,
-			&(*((*vars).philos + i))) == ZERO)
+				&(*((*vars).philos + i))) == ZERO)
 			(*vars).nb_threads = i;
 		return ;
 	}
 	if (pthread_create(&((*(((*vars).philos) + i)).id), NULL, start,
-		&(*((*vars).philos + i))) == ZERO)
+			&(*((*vars).philos + i))) == ZERO)
 		(*vars).nb_threads = ++i;
 }
