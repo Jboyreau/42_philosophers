@@ -96,7 +96,7 @@ char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);
 	pthread_mutex_lock(((*philo).next_fork));
 	if (check_death(vars, philo, *timestamp) == ZERO)
-		return (ZERO, pthread_mutex_unlock(((*philo).next_fork)));
+		return (pthread_mutex_unlock(((*philo).next_fork)), ZERO);
 	if (print_fork((*philo).num, vars) == ZERO)
 	{
 		pthread_mutex_unlock(((*philo).next_fork));

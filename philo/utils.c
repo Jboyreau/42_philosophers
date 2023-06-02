@@ -14,8 +14,6 @@
 
 void	check_end(t_alloc_vars *vars)
 {
-	int i = 0;
-
 	while ((*vars).death == ZERO)
 	{
 		pthread_mutex_lock(&((*vars).mutex_end));
