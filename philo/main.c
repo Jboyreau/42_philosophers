@@ -64,7 +64,7 @@ static void	destroy(t_alloc_vars *vars, char mode)
 	if (mode == MODE_JOIN)
 	{
 		while (++index < (*vars).nb_threads)
-			pthread_join((*((*vars).philos + index)).id, NULL);
+			pthread_detach((*((*vars).philos + index)).id);
 	}
 	printf("exit\n");
 	if ((*vars).params)
