@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jboyreau <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/02 12:33:17 by jboyreau          #+#    #+#             */
+/*   Updated: 2023/06/02 13:25:13 by jboyreau         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -11,8 +23,10 @@
 #define SIX 6
 #define NB_EAT 4
 #define ZERO 0
+#define TEN 10
 #define LOOP_START -1
 #define ONE 1
+#define TWO 2
 
 static char	rep(t_alloc_vars *vars, t_philo *philo, size_t *timestamp, char m)
 {
@@ -40,8 +54,8 @@ void	*start(void *arg)
 	timestamp = (KILO * t.tv_sec) + (t.tv_usec / (size_t)KILO);
 	if ((*philo).num == ONE)
 		(*vars).ts = timestamp;
-	else
-		usleep(ONE * (*philo).num);
+	if ((*philo).num % TWO)
+		(usleep(KILO), print_think((*philo).num, vars));
 	if ((*vars).argc == SIX)
 	{
 		(*philo).eat_count = ZERO;
