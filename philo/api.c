@@ -47,7 +47,7 @@ static char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
 		(*vars).report = ONE;
 		pthread_mutex_unlock(&((*vars).mutex_report));
 		pthread_mutex_lock(&((*vars).mutex_stdout));
-		printf("%ldms %d died\n", new_timestamp - (*vars).ts, (*philo).num);
+		printf("%ldms %d died\n", new_timestamp - (*philo).ts, (*philo).num);
 		pthread_mutex_unlock(&((*vars).mutex_stdout));
 		return (ZERO);
 	}
@@ -59,7 +59,7 @@ char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	size_t		i;
 	size_t		end;
 
-	if (print_sleep((*philo).num, vars) == ZERO)
+	if (print_sleep((*philo).num, vars, philo) == ZERO)
 		return (ZERO);
 	end = *((*vars).micros + TIME_SLEEP) / TEN_KILO;
 	i = LOOP_START;
@@ -81,7 +81,7 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	size_t		i;
 	size_t		end;
 
-	if (print_eat((*philo).num, vars, timestamp) == ZERO)
+	if (print_eat((*philo).num, vars, timestamp, philo) == ZERO)
 		return (ZERO);
 	end = *((*vars).micros + TIME_EAT) / TEN_KILO;
 	i = LOOP_START;
@@ -120,7 +120,7 @@ char	can_i_wait(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 			(pthread_mutex_lock(&((*vars).mutex_report)), (*vars).report = ONE);
 			pthread_mutex_unlock(&((*vars).mutex_report));
 			pthread_mutex_lock(&((*vars).mutex_stdout));
-			printf("%ldms %d died\n", new_timestamp - (*vars).ts, (*philo).num);
+			printf("%ldms %d died\n", new_timestamp - (*philo).ts, (*philo).num);
 			pthread_mutex_unlock(&((*vars).mutex_stdout));
 			return (pthread_mutex_unlock(&((*vars).mutex_stdout)), ZERO);
 		}
@@ -135,7 +135,7 @@ char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	pthread_mutex_lock(&((*philo).fork));
 	if (check_death(vars, philo, *timestamp) == ZERO)
 		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);
-	if (print_fork((*philo).num, vars) == ZERO)
+	if (print_fork((*philo).num, vars, philo) == ZERO)
 		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);
 	pthread_mutex_lock(((*philo).next_fork));
 	if (check_death(vars, philo, *timestamp) == ZERO)
@@ -143,7 +143,7 @@ char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		pthread_mutex_unlock(&((*philo).fork));
 		return (pthread_mutex_unlock(((*philo).next_fork)), ZERO);
 	}
-	if (print_fork((*philo).num, vars) == ZERO)
+	if (print_fork((*philo).num, vars, philo) == ZERO)
 	{
 		pthread_mutex_unlock(((*philo).next_fork));
 		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);

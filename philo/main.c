@@ -32,11 +32,12 @@ static char	rep(t_alloc_vars *vars, t_philo *philo, size_t *timestamp, char m)
 {
 	if (take_fork(vars, philo, timestamp) == ZERO)
 		return (ZERO);
-	if ((*philo).eat_count >= *((*vars).params + NB_EAT) && m == ONE)
-		return (ZERO);
+	if (m == ONE)
+		if ((*philo).eat_count >= *((*vars).params + NB_EAT))
+			return (ZERO);
 	if (sleep_(vars, philo, timestamp) == ZERO)
 		return (ZERO);
-	if (print_think((*philo).num, vars) == ZERO)
+	if (print_think((*philo).num, vars, philo) == ZERO)
 		return (ZERO);
 	return (ONE);
 }
@@ -50,21 +51,31 @@ void	*start(void *arg)
 
 	philo = (t_philo *)arg;
 	vars = (*philo).vars;
+	while (ONE)
+	{
+		pthread_mutex_lock(&((*vars).death_mutex));
+		if ((*vars).launch == ONE)
+		{
+			pthread_mutex_unlock(&((*vars).death_mutex));
+			break ;
+		}
+		pthread_mutex_unlock(&((*vars).death_mutex));
+		usleep(ONE);
+	}
 	gettimeofday(&t, NULL);
 	timestamp = (KILO * t.tv_sec) + (t.tv_usec / (size_t)KILO);
-	if ((*philo).num == ONE)
-		(*vars).ts = timestamp;
+	(*philo).ts = timestamp;
 	if ((*philo).num % TWO)
-		(usleep(KILO), print_think((*philo).num, vars));
+		(usleep(KILO), print_think((*philo).num, vars, philo));
 	if ((*vars).argc == SIX)
 	{
 		(*philo).eat_count = ZERO;
-		while (1)
+		while (ONE)
 			if (rep(vars, philo, &timestamp, ONE) == ZERO)
 				return (inc_end(vars), NULL);
 		return (inc_end(vars), NULL);
 	}
-	while (1)
+	while (ONE)
 		if (rep(vars, philo, &timestamp, ZERO) == ZERO)
 			return (inc_end(vars), NULL);
 	return (inc_end(vars), NULL);
@@ -90,7 +101,7 @@ static void	fork_point(t_alloc_vars *vars)
 	static unsigned int	i = LOOP_START;
 	unsigned int		index_last_fork;
 
-	index_last_fork = *((*vars).params) - ONE;
+	index_last_fork = (*((*vars).params)) - ONE;
 	while (++i < *((*vars).params))
 		if (pthread_mutex_init(&((*((*vars).philos + i)).fork), NULL))
 			return ((*vars).nb_fork = ++i, (void)ZERO);
@@ -107,6 +118,10 @@ static void	fork_point(t_alloc_vars *vars)
 		thread_creation(vars, i);
 	}
 	thread_creation(vars, i);
+	
+	pthread_mutex_lock(&((*vars).death_mutex));
+	(*vars).launch = ONE;
+	pthread_mutex_unlock(&((*vars).death_mutex));
 }
 
 int	main(int argc, char **argv)
