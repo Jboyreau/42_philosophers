@@ -121,7 +121,6 @@ char	can_i_wait(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 			pthread_mutex_unlock(&((*vars).mutex_report));
 			pthread_mutex_lock(&((*vars).mutex_stdout));
 			printf("%ldms %d died\n", new_timestamp - (*philo).ts, (*philo).num);
-			pthread_mutex_unlock(&((*vars).mutex_stdout));
 			return (pthread_mutex_unlock(&((*vars).mutex_stdout)), ZERO);
 		}
 	}
