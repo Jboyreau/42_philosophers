@@ -67,11 +67,11 @@ char	print_fork(unsigned int id, t_alloc_vars *vars, t_philo *philo)
 		pthread_mutex_unlock(&((*vars).death_mutex));
 		return (ZERO);
 	}
-	(pthread_mutex_unlock(&((*vars).death_mutex)), gettimeofday(&t, NULL));
+	pthread_mutex_unlock(&((*vars).death_mutex));
+	(pthread_mutex_lock(&((*vars).mutex_stdout)), gettimeofday(&t, NULL));
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 		+ (t.tv_usec / (size_t)KILO);
-	pthread_mutex_lock(&((*vars).mutex_stdout));
 	(pn(new_timestamp - (*philo).ts), write(ONE, "ms ", THREE), pn(id));
 	write(ONE, " has taken a fork\n", EIGHTEEN);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
@@ -90,11 +90,11 @@ t_philo *philo)
 		pthread_mutex_unlock(&((*vars).death_mutex));
 		return (ZERO);
 	}
-	(pthread_mutex_unlock(&((*vars).death_mutex)), gettimeofday(&t, NULL));
+	pthread_mutex_unlock(&((*vars).death_mutex));
+	(pthread_mutex_lock(&((*vars).mutex_stdout)), gettimeofday(&t, NULL));
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 		+ (t.tv_usec / (size_t)KILO);
-	pthread_mutex_lock(&((*vars).mutex_stdout));
 	(pn(new_timestamp - (*philo).ts), write(ONE, "ms ", THREE), pn(id));
 	write(ONE, " is eating\n", ELEVEN);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
@@ -112,11 +112,11 @@ char	print_sleep(unsigned int id, t_alloc_vars *vars, t_philo *philo)
 		pthread_mutex_unlock(&((*vars).death_mutex));
 		return (ZERO);
 	}
-	(pthread_mutex_unlock(&((*vars).death_mutex)), gettimeofday(&t, NULL));
+	pthread_mutex_unlock(&((*vars).death_mutex));
+	(pthread_mutex_lock(&((*vars).mutex_stdout)), gettimeofday(&t, NULL));
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 		+ (t.tv_usec / (size_t)KILO);
-	pthread_mutex_lock(&((*vars).mutex_stdout));
 	(pn(new_timestamp - (*philo).ts), write(ONE, "ms ", THREE), pn(id));
 	write(ONE, " is sleeping\n", THIRTEEN);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
@@ -131,11 +131,11 @@ char	print_think(unsigned int id, t_alloc_vars *vars, t_philo *philo)
 	pthread_mutex_lock(&((*vars).death_mutex));
 	if ((*vars).death)
 		return (pthread_mutex_unlock(&((*vars).death_mutex)), ZERO);
-	(pthread_mutex_unlock(&((*vars).death_mutex)), gettimeofday(&t, NULL));
+	pthread_mutex_unlock(&((*vars).death_mutex));
+	(pthread_mutex_lock(&((*vars).mutex_stdout)), gettimeofday(&t, NULL));
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 		+ (t.tv_usec / (size_t)KILO);
-	pthread_mutex_lock(&((*vars).mutex_stdout));
 	(pn(new_timestamp - (*philo).ts), write(ONE, "ms ", THREE), pn(id));
 	write(ONE, " is thinking\n", THIRTEEN);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));

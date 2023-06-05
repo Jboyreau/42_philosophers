@@ -59,3 +59,30 @@ void	thread_creation(t_alloc_vars *vars, unsigned int i)
 			&(*((*vars).philos + i))) == ZERO)
 		(*vars).nb_threads = ++i;
 }
+
+void	starting_block(t_alloc_vars *vars)
+{
+	while (ONE)
+	{
+		pthread_mutex_lock(&((*vars).death_mutex));
+		if ((*vars).launch == ONE)
+		{
+			pthread_mutex_unlock(&((*vars).death_mutex));
+			break ;
+		}
+		pthread_mutex_unlock(&((*vars).death_mutex));
+		usleep(ONE);
+	}
+}
+
+void	mutex_init(t_alloc_vars *vars)
+{
+	if (pthread_mutex_init(&((*vars).mutex_stdout), NULL))
+		return ;
+	if (pthread_mutex_init(&((*vars).death_mutex), NULL))
+		return ;
+	if (pthread_mutex_init(&((*vars).mutex_report), NULL))
+		return ;
+	if (pthread_mutex_init(&((*vars).mutex_end), NULL))
+		return ;
+}

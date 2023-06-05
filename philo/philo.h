@@ -83,5 +83,6 @@ void	inc_end(t_alloc_vars *vars);
 void	*start(void *arg);
 void	thread_creation(t_alloc_vars *vars, unsigned int i);
 char	take_fork_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
-
+void	starting_block(t_alloc_vars *vars);
+void	mutex_init(t_alloc_vars *vars);
 #endif

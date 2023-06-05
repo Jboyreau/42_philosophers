@@ -51,17 +51,7 @@ void	*start(void *arg)
 
 	philo = (t_philo *)arg;
 	vars = (*philo).vars;
-	while (ONE)
-	{
-		pthread_mutex_lock(&((*vars).death_mutex));
-		if ((*vars).launch == ONE)
-		{
-			pthread_mutex_unlock(&((*vars).death_mutex));
-			break ;
-		}
-		pthread_mutex_unlock(&((*vars).death_mutex));
-		usleep(ONE);
-	}
+	starting_block(vars);
 	gettimeofday(&t, NULL);
 	timestamp = (KILO * t.tv_sec) + (t.tv_usec / (size_t)KILO);
 	(*philo).ts = timestamp;
@@ -86,8 +76,13 @@ static void	destroy(t_alloc_vars *vars, char mode)
 	static size_t	index = LOOP_START;
 
 	if (mode == MODE_JOIN)
+	{
 		while (++index < (*vars).nb_threads)
 			pthread_join((*((*vars).philos + index)).id, NULL);
+		index = LOOP_START;
+		while (++index < (*vars).nb_fork)
+			pthread_mutex_destroy(&(*((*vars).philos + index)).fork);
+	}
 	if ((*vars).params)
 		free((*vars).params);
 	if ((*vars).micros)
@@ -101,6 +96,7 @@ static void	fork_point(t_alloc_vars *vars)
 	static unsigned int	i = LOOP_START;
 	unsigned int		index_last_fork;
 
+	mutex_init(vars);
 	index_last_fork = (*((*vars).params)) - ONE;
 	while (++i < *((*vars).params))
 		if (pthread_mutex_init(&((*((*vars).philos + i)).fork), NULL))
@@ -118,7 +114,6 @@ static void	fork_point(t_alloc_vars *vars)
 		thread_creation(vars, i);
 	}
 	thread_creation(vars, i);
-	
 	pthread_mutex_lock(&((*vars).death_mutex));
 	(*vars).launch = ONE;
 	pthread_mutex_unlock(&((*vars).death_mutex));
@@ -131,14 +126,6 @@ int	main(int argc, char **argv)
 	if (parsing(argv, &vars, argc) == ZERO)
 		return (destroy(&vars, MODE_DESTROY), EXIT_FAILURE);
 	vars.argc = argc;
-	if (pthread_mutex_init(&(vars.mutex_stdout), NULL))
-		return (destroy(&vars, MODE_DESTROY), EXIT_FAILURE);
-	if (pthread_mutex_init(&(vars.death_mutex), NULL))
-		return (destroy(&vars, MODE_DESTROY), EXIT_FAILURE);
-	if (pthread_mutex_init(&(vars.mutex_report), NULL))
-		return (destroy(&vars, MODE_DESTROY), EXIT_FAILURE);
-	if (pthread_mutex_init(&(vars.mutex_end), NULL))
-		return (destroy(&vars, MODE_DESTROY), EXIT_FAILURE);
 	fork_point(&vars);
 	check_end(&vars);
 	destroy(&vars, MODE_JOIN);
