@@ -37,7 +37,7 @@ static char	rep(t_alloc_vars *vars, t_philo *philo, size_t *timestamp, char m)
 			return (ZERO);
 	if (sleep_(vars, philo, timestamp) == ZERO)
 		return (ZERO);
-	if (print_think((*philo).num, vars, philo) == ZERO)
+	if (print_think((*philo).num, vars, philo, timestamp) == ZERO)
 		return (ZERO);
 	return (ONE);
 }
@@ -56,7 +56,7 @@ void	*start(void *arg)
 	timestamp = (KILO * t.tv_sec) + (t.tv_usec / (size_t)KILO);
 	(*philo).ts = timestamp;
 	if ((*philo).num % TWO)
-		(usleep(KILO), print_think((*philo).num, vars, philo));
+		(usleep(KILO), print_think((*philo).num, vars, philo, &timestamp));
 	if ((*vars).argc == SIX)
 	{
 		(*philo).eat_count = ZERO;

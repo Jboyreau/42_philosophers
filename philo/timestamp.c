@@ -16,6 +16,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include "philo.h"
+#define LOOP_START -1
 #define KILO 1000
 #define THREE 3
 #define TEN 10
@@ -25,9 +26,15 @@
 #define ONE 1
 #define ZERO 0
 #define TWO 2
+#define THREE 3
 #define FOURTY_EIGHT 48
 #define SIZE_DIGITS 22
 #define M_ONE -1
+#define TEN_KILO 10000
+#define FIVE_H 2000
+#define NINE 9
+#define EIGHT 8
+#define FOUR 4
 
 void	pn(size_t n)
 {
@@ -123,7 +130,8 @@ char	print_sleep(unsigned int id, t_alloc_vars *vars, t_philo *philo)
 	return (ONE);
 }
 
-char	print_think(unsigned int id, t_alloc_vars *vars, t_philo *philo)
+char	print_think(unsigned int id, t_alloc_vars *vars, t_philo *philo,
+size_t *timestamp)
 {
 	t_timeval	t;
 	size_t		new_timestamp;
@@ -139,5 +147,9 @@ char	print_think(unsigned int id, t_alloc_vars *vars, t_philo *philo)
 	(pn(new_timestamp - (*philo).ts), write(ONE, "ms ", THREE), pn(id));
 	write(ONE, " is thinking\n", THIRTEEN);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
+	if (*((*vars).params + TWO) == *((*vars).params + THREE))
+		usleep(FIVE_H);
+	if (*((*vars).params + TWO) > *((*vars).params + THREE))
+		wait_n_watch(vars, philo, timestamp);
 	return (ONE);
 }

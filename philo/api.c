@@ -19,6 +19,7 @@
 #include "philo.h"
 #define ZERO 0
 #define ONE 1
+#define TWO 2
 #define KILO 1000
 #define TEN_KILO 10000
 #define LOOP_START -1
@@ -28,7 +29,7 @@
 #define NINE 9
 #define THIRTEEN 13
 
-static char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
+char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
 {
 	t_timeval	t;
 	size_t		new_timestamp;
@@ -105,7 +106,8 @@ char	can_i_wait(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	size_t		new_timestamp;
 	size_t		nt;
 
-	if (*((*vars).micros + TIME_EAT) > *((*vars).micros + TIME_SLEEP))
+	if (*((*vars).micros + TIME_EAT) > *((*vars).micros + TIME_SLEEP)
+		&& (*((*vars).params) % TWO))
 	{
 		gettimeofday(&t, NULL);
 		new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
@@ -132,13 +134,11 @@ char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	if (can_i_wait(vars, philo, timestamp) == ZERO)
 		return (ZERO);
 	pthread_mutex_lock(&((*philo).fork));
-	if (can_i_wait(vars, philo, timestamp) == ZERO)
-		return (ZERO);
 	pthread_mutex_lock(((*philo).next_fork));
 	if (check_death(vars, philo, *timestamp) == ZERO)
 	{
-		pthread_mutex_unlock(&((*philo).fork));
-		return (pthread_mutex_unlock(((*philo).next_fork)), ZERO);
+		pthread_mutex_unlock(((*philo).next_fork));
+		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);
 	}
 	if (print_fork((*philo).num, vars, philo) == ZERO
 		|| print_fork((*philo).num, vars, philo) == ZERO)

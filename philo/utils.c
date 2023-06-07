@@ -20,6 +20,7 @@
 #include "philo.h"
 #define ZERO 0
 #define ONE 1
+#define TWO 2
 #define NB_EAT 4
 #define KILO 1000
 #define SIX 6
@@ -55,9 +56,16 @@ void	inc_end(t_alloc_vars *vars)
 
 void	thread_creation(t_alloc_vars *vars, unsigned int i)
 {
-	if (pthread_create(&((*(((*vars).philos) + i)).id), NULL, start,
+	if (i % TWO)
+	{
+		if (pthread_create(&((*(((*vars).philos) + i)).id), NULL, start,
+				&(*((*vars).philos + i))) == ZERO)
+			(*vars).nb_threads = ++i;
+		return ;
+	}
+	if (pthread_create(&((*(((*vars).philos) + i)).id), NULL, start_,
 			&(*((*vars).philos + i))) == ZERO)
-		(*vars).nb_threads = ++i;
+	(*vars).nb_threads = ++i;
 }
 
 void	starting_block(t_alloc_vars *vars)

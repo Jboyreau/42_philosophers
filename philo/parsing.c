@@ -72,19 +72,9 @@ static size_t	ft_atolu(char *s)
 
 static void	the_single_one_must_die(t_alloc_vars *vars)
 {
-	t_timeval	t;
-
-	gettimeofday(&t, NULL);
-	printf("%ldms %d has taken a fork\n",
-		(t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
-		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
-		+ (t.tv_usec / (size_t)KILO), ONE);
-	usleep(*((*vars).micros + TIME_SLEEP));
-	gettimeofday(&t, NULL);
-	printf("%ldms %d died\n",
-		(t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
-		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
-		+ (t.tv_usec / (size_t)KILO), ONE);
+	printf("0ms 1 has taken a fork\n");
+	usleep(*((*vars).micros + TIME_DEATH));
+	printf("%ldms 1 died\n", *((*vars).micros + TIME_DEATH) / KILO);
 }
 
 static char	alloc(t_alloc_vars *vars, size_t nb_philos, int argc)
