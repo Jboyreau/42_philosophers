@@ -1,12 +1,16 @@
 NAME=philo
 
-SRC=api.c main.c\
-	parsing.c timestamp.c\
-	utils.c utilz.c\
+SRC=api.c api_.c\
+	main.c main_.c\
+	routine.c routine_.c\
+	parsing.c\
+	timestamp.c timestamp_.c
 
-OBJ=api.o main.o\
-	parsing.o timestamp.o\
-	utils.o utilz.o\
+OBJ=api.o api_.o\
+	main.o main_.o\
+	routine.o routine_.o\
+	parsing.o\
+	timestamp.o timestamp_.o
 
 CPPFLAGS= -g3 -Wall -Wextra -Werror
 

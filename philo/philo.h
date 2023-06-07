@@ -75,22 +75,18 @@ char	print_eat(unsigned int id, t_alloc_vars *vars, size_t *timestamp,
 			t_philo *philo);
 char	print_think(unsigned int id, t_alloc_vars *vars, t_philo *philo,
 			size_t *timestamp);
+char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	parsing(char **argv, t_alloc_vars *vars, int argc);
+char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp);
+char	equal_or_not(unsigned int *params, unsigned int nt);
+char	can_i_wait(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	take_fork_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
-void	check_end(t_alloc_vars *vars);
 void	inc_end(t_alloc_vars *vars);
 void	*start(void *arg);
 void	*start_(void *arg);
-void	thread_creation(t_alloc_vars *vars, unsigned int i);
-char	take_fork_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
-void	starting_block(t_alloc_vars *vars);
-void	mutex_init(t_alloc_vars *vars);
-char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp);
-char	take_fork_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
-char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
-char	can_i_wait(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
+void	check_end(t_alloc_vars *vars);
 
 #endif

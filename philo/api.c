@@ -20,6 +20,7 @@
 #define ZERO 0
 #define ONE 1
 #define TWO 2
+#define THREE 3
 #define KILO 1000
 #define TEN_KILO 10000
 #define LOOP_START -1
@@ -62,7 +63,7 @@ char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 
 	if (print_sleep((*philo).num, vars, philo) == ZERO)
 		return (ZERO);
-	end = *((*vars).micros + TIME_SLEEP) / TEN_KILO;
+	end = *((*vars).params + THREE) / TEN;
 	i = LOOP_START;
 	while (++i < end)
 	{
@@ -84,7 +85,7 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 
 	if (print_eat((*philo).num, vars, timestamp, philo) == ZERO)
 		return (ZERO);
-	end = *((*vars).micros + TIME_EAT) / TEN_KILO;
+	end = *((*vars).params + TWO) / TEN_KILO;
 	i = LOOP_START;
 	while (++i < end)
 	{
@@ -102,11 +103,11 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 
 char	can_i_wait(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 {
-	t_timeval	t;
-	size_t		new_timestamp;
-	size_t		nt;
+	t_timeval		t;
+	size_t			new_timestamp;
+	unsigned int	nt;
 
-	if (*((*vars).micros + TIME_EAT) > *((*vars).micros + TIME_SLEEP)
+	if (*((*vars).micros + TIME_EAT) >= *((*vars).micros + TIME_SLEEP)
 		&& (*((*vars).params) % TWO))
 	{
 		gettimeofday(&t, NULL);
@@ -114,8 +115,7 @@ char	can_i_wait(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 			+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 			+ (t.tv_usec / (size_t)KILO);
 		nt = new_timestamp - *timestamp;
-		if ((*((*vars).params + 1) - nt) < (*((*vars).params + 2)
-				- *((*vars).params + 3)))
+		if (equal_or_not((*vars).params, nt))
 		{
 			(usleep(*((*vars).micros) - (nt * KILO)), gettimeofday(&t, NULL));
 			new_timestamp = KILO * t.tv_sec + (t.tv_usec / (size_t)KILO);

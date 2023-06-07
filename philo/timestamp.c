@@ -147,9 +147,7 @@ size_t *timestamp)
 	(pn(new_timestamp - (*philo).ts), write(ONE, "ms ", THREE), pn(id));
 	write(ONE, " is thinking\n", THIRTEEN);
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
-	if (*((*vars).params + TWO) == *((*vars).params + THREE))
-		usleep(FIVE_H);
-	if (*((*vars).params + TWO) > *((*vars).params + THREE))
-		wait_n_watch(vars, philo, timestamp);
+	if (wait_n_watch(vars, philo, timestamp) == ZERO)
+		return (ZERO);
 	return (ONE);
 }

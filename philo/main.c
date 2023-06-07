@@ -28,49 +28,6 @@
 #define ONE 1
 #define TWO 2
 
-static char	rep(t_alloc_vars *vars, t_philo *philo, size_t *timestamp, char m)
-{
-	if (take_fork(vars, philo, timestamp) == ZERO)
-		return (ZERO);
-	if (m == ONE)
-		if ((*philo).eat_count >= *((*vars).params + NB_EAT))
-			return (ZERO);
-	if (sleep_(vars, philo, timestamp) == ZERO)
-		return (ZERO);
-	if (print_think((*philo).num, vars, philo, timestamp) == ZERO)
-		return (ZERO);
-	return (ONE);
-}
-
-void	*start(void *arg)
-{
-	t_philo			*philo;
-	t_alloc_vars	*vars;
-	t_timeval		t;
-	size_t			timestamp;
-
-	philo = (t_philo *)arg;
-	vars = (*philo).vars;
-	starting_block(vars);
-	gettimeofday(&t, NULL);
-	timestamp = (KILO * t.tv_sec) + (t.tv_usec / (size_t)KILO);
-	(*philo).ts = timestamp;
-	if ((*philo).num % TWO)
-		(usleep(KILO), print_think((*philo).num, vars, philo, &timestamp));
-	if ((*vars).argc == SIX)
-	{
-		(*philo).eat_count = ZERO;
-		while (ONE)
-			if (rep(vars, philo, &timestamp, ONE) == ZERO)
-				return (inc_end(vars), NULL);
-		return (inc_end(vars), NULL);
-	}
-	while (ONE)
-		if (rep(vars, philo, &timestamp, ZERO) == ZERO)
-			return (inc_end(vars), NULL);
-	return (inc_end(vars), NULL);
-}
-
 static void	destroy(t_alloc_vars *vars, char mode)
 {
 	static size_t	index = LOOP_START;
@@ -89,6 +46,32 @@ static void	destroy(t_alloc_vars *vars, char mode)
 		free((*vars).micros);
 	if ((*vars).philos)
 		free((*vars).philos);
+}
+
+static void	thread_creation(t_alloc_vars *vars, unsigned int i)
+{
+	if (i % TWO)
+	{
+		if (pthread_create(&((*(((*vars).philos) + i)).id), NULL, start,
+				&(*((*vars).philos + i))) == ZERO)
+			(*vars).nb_threads = ++i;
+		return ;
+	}
+	if (pthread_create(&((*(((*vars).philos) + i)).id), NULL, start_,
+			&(*((*vars).philos + i))) == ZERO)
+	(*vars).nb_threads = ++i;
+}
+
+static void	mutex_init(t_alloc_vars *vars)
+{
+	if (pthread_mutex_init(&((*vars).mutex_stdout), NULL))
+		return ;
+	if (pthread_mutex_init(&((*vars).death_mutex), NULL))
+		return ;
+	if (pthread_mutex_init(&((*vars).mutex_report), NULL))
+		return ;
+	if (pthread_mutex_init(&((*vars).mutex_end), NULL))
+		return ;
 }
 
 static void	fork_point(t_alloc_vars *vars)
