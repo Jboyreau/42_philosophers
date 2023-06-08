@@ -20,6 +20,7 @@
 #define ZERO 0
 #define ONE 1
 #define TWO 2
+#define THREE 3
 #define KILO 1000
 #define TEN_KILO 10000
 #define LOOP_START -1
@@ -57,9 +58,10 @@ char	take_fork_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 
 char	equal_or_not(unsigned int *params, unsigned int nt)
 {
-	if (*(params + 1) - nt < *(params + 2) - *(params + 3))
-		return (ONE);
-	if (*(params + 1) - nt < *(params + 2))
+	if (*(params + TWO) > *(params + THREE))
+		if (*(params + ONE) - nt < *(params + TWO) - *(params + THREE))
+			return (ONE);
+	if (*(params + ONE) - nt < *(params + TWO))
 		return (ONE);
 	return (ZERO);
 }

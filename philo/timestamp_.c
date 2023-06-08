@@ -42,11 +42,8 @@ char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	size_t		i;
 	size_t		end;
 
-	if (*((*vars).params + TWO) >= *((*vars).params + THREE))
-	{
-		usleep(FIVE_H);
+	if (*((*vars).params + TWO) <= *((*vars).params + THREE))
 		return (ONE);
-	}
 	end = (*((*vars).params + TWO) - *((*vars).params + THREE)) / TEN;
 	i = LOOP_START;
 	while (++i < end)
@@ -54,9 +51,9 @@ char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		if (check_death(vars, philo, *timestamp) == ZERO)
 			return (ZERO);
 		usleep(TEN_KILO);
-		if (check_death(vars, philo, *timestamp) == ZERO)
-			return (ZERO);
 	}
+	if (check_death(vars, philo, *timestamp) == ZERO)
+		return (ZERO);
 	usleep(*((*vars).micros + TIME_SLEEP) - ((end << THIRTEEN)
 			+ (end << TEN) + (end << NINE) + (end << EIGHT) + (end << FOUR)));
 	usleep(TWO_TH);

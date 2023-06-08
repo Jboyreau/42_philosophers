@@ -70,9 +70,9 @@ char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		if (check_death(vars, philo, *timestamp) == ZERO)
 			return (ZERO);
 		usleep(TEN_KILO);
-		if (check_death(vars, philo, *timestamp) == ZERO)
-			return (ZERO);
 	}
+	if (check_death(vars, philo, *timestamp) == ZERO)
+		return (ZERO);
 	usleep(*((*vars).micros + TIME_SLEEP) - ((end << THIRTEEN)
 			+ (end << TEN) + (end << NINE) + (end << EIGHT) + (end << FOUR)));
 	return (ONE);
@@ -92,9 +92,9 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		if (check_death(vars, philo, *timestamp) == ZERO)
 			return (ZERO);
 		usleep(TEN_KILO);
-		if (check_death(vars, philo, *timestamp) == ZERO)
-			return (ZERO);
 	}
+	if (check_death(vars, philo, *timestamp) == ZERO)
+		return (ZERO);
 	usleep(*((*vars).micros + TIME_EAT) - ((end << THIRTEEN)
 			+ (end << TEN) + (end << NINE) + (end << EIGHT) + (end << FOUR)));
 	++((*philo).eat_count);
@@ -107,7 +107,7 @@ char	can_i_wait(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	size_t			new_timestamp;
 	unsigned int	nt;
 
-	if (*((*vars).micros + TIME_EAT) >= *((*vars).micros + TIME_SLEEP)
+	if (*((*vars).params + TWO) >= *((*vars).params + THREE)
 		&& (*((*vars).params) % TWO))
 	{
 		gettimeofday(&t, NULL);

@@ -31,7 +31,7 @@
 #define SIZE_DIGITS 22
 #define M_ONE -1
 #define TEN_KILO 10000
-#define FIVE_H 2000
+#define FIVE 5
 #define NINE 9
 #define EIGHT 8
 #define FOUR 4
