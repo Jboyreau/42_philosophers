@@ -14,7 +14,7 @@ OS: Ubuntu
 
 Compilation:
 
-	gcc -Wall -Wextra -Werror -g3 \*.c -lpthread
+	gcc -Wall -Wextra -Werror -g3 *.c -lpthread
 Usage:
 
     ./a.out 5 810 200 200 10
