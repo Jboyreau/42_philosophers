@@ -89,7 +89,7 @@ static char	alloc(t_alloc_vars *vars, size_t nb_philos, int argc)
 	if ((*vars).micros == NULL)
 		return (ZERO);
 	(*vars).philos = malloc(nb_philos * sizeof(t_philo));
-	if ((*vars).params == NULL)
+	if ((*vars).philos == NULL)
 		return (ZERO);
 	return (ONE);
 }
