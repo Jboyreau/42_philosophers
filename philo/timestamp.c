@@ -136,9 +136,6 @@ size_t *timestamp)
 	t_timeval	t;
 	size_t		new_timestamp;
 
-	pthread_mutex_lock(&((*vars).death_mutex));
-	if ((*vars).death)
-		return (pthread_mutex_unlock(&((*vars).death_mutex)), ZERO);
 	pthread_mutex_unlock(&((*vars).death_mutex));
 	(pthread_mutex_lock(&((*vars).mutex_stdout)), gettimeofday(&t, NULL));
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)

@@ -17,20 +17,21 @@
 #include <pthread.h>
 #include <unistd.h>
 #include "philo.h"
+#define LOOP_START -1
 #define ZERO 0
 #define ONE 1
 #define TWO 2
 #define THREE 3
-#define KILO 1000
-#define TEN_KILO 10000
-#define LOOP_START -1
 #define FOUR 4
-#define TEN 10
 #define EIGHT 8
 #define NINE 9
+#define TEN 10
 #define THIRTEEN 13
+#define KILO 1000
+#define TINY_SLEEP 60000
 
-char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
+char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp,
+char mode)
 {
 	t_timeval	t;
 	size_t		new_timestamp;
@@ -53,6 +54,9 @@ char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
 		pthread_mutex_unlock(&((*vars).mutex_stdout));
 		return (ZERO);
 	}
+	if (mode == ONE)
+		if (can_i_wait_sixty(vars, philo, timestamp, new_timestamp) == ZERO)
+			return (ZERO);
 	return (ONE);
 }
 
@@ -63,18 +67,18 @@ char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 
 	if (print_sleep((*philo).num, vars, philo) == ZERO)
 		return (ZERO);
-	end = *((*vars).params + THREE) / TEN;
-	i = LOOP_START;
-	while (++i < end)
+	end = *((*vars).micros + TIME_SLEEP);
+	i = TINY_SLEEP;
+	while (i < end)
 	{
-		if (check_death(vars, philo, *timestamp) == ZERO)
+		if (check_death(vars, philo, *timestamp, ONE) == ZERO)
 			return (ZERO);
-		usleep(TEN_KILO);
+		usleep(TINY_SLEEP);
+		i += TINY_SLEEP;
 	}
-	if (check_death(vars, philo, *timestamp) == ZERO)
+	if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
 		return (ZERO);
-	usleep(*((*vars).micros + TIME_SLEEP) - ((end << THIRTEEN)
-			+ (end << TEN) + (end << NINE) + (end << EIGHT) + (end << FOUR)));
+	usleep(end - (i - TINY_SLEEP));
 	return (ONE);
 }
 
@@ -85,18 +89,18 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 
 	if (print_eat((*philo).num, vars, timestamp, philo) == ZERO)
 		return (ZERO);
-	end = *((*vars).params + TWO) / TEN_KILO;
-	i = LOOP_START;
-	while (++i < end)
+	end = *((*vars).micros + TIME_EAT);
+	i = TINY_SLEEP;
+	while (i < end)
 	{
-		if (check_death(vars, philo, *timestamp) == ZERO)
+		if (check_death(vars, philo, *timestamp, ONE) == ZERO)
 			return (ZERO);
-		usleep(TEN_KILO);
+		usleep(TINY_SLEEP);
+		i += TINY_SLEEP;
 	}
-	if (check_death(vars, philo, *timestamp) == ZERO)
+	if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
 		return (ZERO);
-	usleep(*((*vars).micros + TIME_EAT) - ((end << THIRTEEN)
-			+ (end << TEN) + (end << NINE) + (end << EIGHT) + (end << FOUR)));
+	usleep(end - (i - TINY_SLEEP));
 	++((*philo).eat_count);
 	return (ONE);
 }
@@ -135,7 +139,7 @@ char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		return (ZERO);
 	pthread_mutex_lock(&((*philo).fork));
 	pthread_mutex_lock(((*philo).next_fork));
-	if (check_death(vars, philo, *timestamp) == ZERO)
+	if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
 	{
 		pthread_mutex_unlock(((*philo).next_fork));
 		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);

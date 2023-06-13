@@ -29,6 +29,28 @@
 #define EIGHT 8
 #define NINE 9
 #define THIRTEEN 13
+#define SIXTY 60
+
+char	can_i_wait_sixty(t_alloc_vars *vars, t_philo *philo,
+size_t timestamp, size_t new_timestamp)
+{
+	size_t	past_time;
+
+	past_time = (new_timestamp - timestamp);
+	if (past_time + SIXTY > *((*vars).params + ONE))
+	{
+		usleep(*((*vars).micros + TIME_DEATH) - (past_time * KILO));
+		new_timestamp += *((*vars).params + ONE) - past_time;
+		pthread_mutex_lock(&((*vars).mutex_report));
+		(*vars).report = ONE;
+		pthread_mutex_unlock(&((*vars).mutex_report));
+		pthread_mutex_lock(&((*vars).mutex_stdout));
+		printf("%ldms %d died\n", new_timestamp - (*philo).ts, (*philo).num);
+		pthread_mutex_unlock(&((*vars).mutex_stdout));
+		return (ZERO);
+	}
+	return (ONE);
+}
 
 char	take_fork_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 {
@@ -36,7 +58,7 @@ char	take_fork_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		return (ZERO);
 	pthread_mutex_lock(((*philo).next_fork));
 	pthread_mutex_lock(&((*philo).fork));
-	if (check_death(vars, philo, *timestamp) == ZERO)
+	if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
 	{
 		pthread_mutex_unlock(&((*philo).fork));
 		return (pthread_mutex_unlock(((*philo).next_fork)), ZERO);

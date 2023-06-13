@@ -16,26 +16,12 @@
 #include <pthread.h>
 #include <unistd.h>
 #include "philo.h"
-#define LOOP_START -1
-#define KILO 1000
-#define FIVE_H 5
-#define THREE 3
-#define TEN 10
-#define EIGHTEEN 18
-#define ELEVEN 11
-#define THIRTEEN 13
 #define ONE 1
 #define ZERO 0
 #define TWO 2
 #define THREE 3
-#define FOURTY_EIGHT 48
-#define SIZE_DIGITS 22
-#define M_ONE -1
-#define TEN_KILO 10000
-#define TWO_TH 2000
-#define NINE 9
-#define EIGHT 8
-#define FOUR 4
+#define FIVE_H 500
+#define TINY_SLEEP 60000
 
 char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 {
@@ -43,19 +29,23 @@ char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 	size_t		end;
 
 	if (*((*vars).params + TWO) <= *((*vars).params + THREE))
-		return (ONE);
-	end = (*((*vars).params + TWO) - *((*vars).params + THREE)) / TEN;
-	i = LOOP_START;
-	while (++i < end)
 	{
-		if (check_death(vars, philo, *timestamp) == ZERO)
+		if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
 			return (ZERO);
-		usleep(TEN_KILO);
+		return (usleep(FIVE_H), ONE);
 	}
-	if (check_death(vars, philo, *timestamp) == ZERO)
+	end = (*((*vars).micros + TIME_EAT) - *((*vars).micros + TIME_SLEEP));
+	i = TINY_SLEEP;
+	while (i < end)
+	{
+		if (check_death(vars, philo, *timestamp, ONE) == ZERO)
+			return (ZERO);
+		usleep(TINY_SLEEP);
+		i += TINY_SLEEP;
+	}
+	if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
 		return (ZERO);
-	usleep(*((*vars).micros + TIME_SLEEP) - ((end << THIRTEEN)
-			+ (end << TEN) + (end << NINE) + (end << EIGHT) + (end << FOUR)));
-	usleep(TWO_TH);
+	usleep(end - (i - TINY_SLEEP));
+	usleep(FIVE_H);
 	return (ONE);
 }
