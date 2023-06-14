@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   api.c                                              :+:      :+:    :+:   */
+/*   api_.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jboyreau <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 12:33:30 by jboyreau          #+#    #+#             */
-/*   Updated: 2023/06/02 12:33:35 by jboyreau         ###   ########.fr       */
+/*   Updated: 2023/06/14 03:53:44 by jboyreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,53 @@
 #define NINE 9
 #define THIRTEEN 13
 #define SIXTY 60
+
+static char	wait_r(t_alloc_vars *vars, t_philo *philo,
+size_t p, size_t new_timestamp)
+{
+	new_timestamp += *((*vars).params + ONE) - p;
+	p = (p << F) + (p << E) + (p << D) + (p << C) + (p << B) + (p << A);
+	if (p + (*philo).time_to_wait > *((*vars).micros))
+	{
+		usleep(*((*vars).micros + TIME_DEATH) - p);
+		pthread_mutex_lock(&((*vars).mutex_report));
+		(*vars).report = ONE;
+		pthread_mutex_unlock(&((*vars).mutex_report));
+		pthread_mutex_lock(&((*vars).mutex_stdout));
+		printf("%ldms %d died\n", new_timestamp - (*philo).ts, (*philo).num);
+		pthread_mutex_unlock(&((*vars).mutex_stdout));
+		return (ZERO);
+	}
+	return (ONE);
+}
+
+char	check_death2(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
+{
+	t_timeval	t;
+	size_t		new_timestamp;
+
+	gettimeofday(&t, NULL);
+	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
+		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
+		+ (t.tv_usec / (size_t)KILO);
+	pthread_mutex_lock(&((*vars).death_mutex));
+	if ((*vars).death)
+		return (pthread_mutex_unlock(&((*vars).death_mutex)), ZERO);
+	pthread_mutex_unlock(&((*vars).death_mutex));
+	if (new_timestamp - timestamp > *((*vars).params + ONE))
+	{
+		pthread_mutex_lock(&((*vars).mutex_report));
+		(*vars).report = ONE;
+		pthread_mutex_unlock(&((*vars).mutex_report));
+		pthread_mutex_lock(&((*vars).mutex_stdout));
+		printf("%ldms %d died\n", new_timestamp - (*philo).ts, (*philo).num);
+		pthread_mutex_unlock(&((*vars).mutex_stdout));
+		return (ZERO);
+	}
+	if (wait_r(vars, philo, new_timestamp - timestamp, new_timestamp) == ZERO)
+			return (ZERO);
+	return (ONE);
+}
 
 char	can_i_wait_sixty(t_alloc_vars *vars, t_philo *philo,
 size_t timestamp, size_t new_timestamp)

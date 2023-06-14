@@ -6,7 +6,7 @@
 /*   By: jboyreau <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 12:33:30 by jboyreau          #+#    #+#             */
-/*   Updated: 2023/06/02 12:33:35 by jboyreau         ###   ########.fr       */
+/*   Updated: 2023/06/14 03:53:48 by jboyreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,9 +76,10 @@ char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		usleep(TINY_SLEEP);
 		i += TINY_SLEEP;
 	}
-	if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
+	(*philo).time_to_wait = end - (i - TINY_SLEEP);
+	if (check_death2(vars, philo, *timestamp) == ZERO)
 		return (ZERO);
-	usleep(end - (i - TINY_SLEEP));
+	usleep((*philo).time_to_wait);
 	return (ONE);
 }
 
@@ -98,9 +99,10 @@ char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		usleep(TINY_SLEEP);
 		i += TINY_SLEEP;
 	}
-	if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
-		return (ZERO);
-	usleep(end - (i - TINY_SLEEP));
+	(*philo).time_to_wait = end - (i - TINY_SLEEP);
+	if (check_death2(vars, philo, *timestamp) == ZERO)
+		return (ZERO);	
+	usleep((*philo).time_to_wait);
 	++((*philo).eat_count);
 	return (ONE);
 }

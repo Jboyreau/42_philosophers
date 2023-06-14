@@ -6,7 +6,7 @@
 /*   By: jboyreau <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 12:33:12 by jboyreau          #+#    #+#             */
-/*   Updated: 2023/06/02 13:05:17 by jboyreau         ###   ########.fr       */
+/*   Updated: 2023/06/14 03:52:19 by jboyreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ typedef struct philosopher
 	unsigned int	eat_count;
 	size_t			last_eat;
 	size_t			ts;
+	size_t			time_to_wait;
 	pthread_t		id;
 	pthread_mutex_t	fork;
 	pthread_mutex_t	*next_fork;
@@ -77,6 +78,7 @@ char	print_think(unsigned int id, t_alloc_vars *vars, t_philo *philo,
 			size_t *timestamp);
 char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	parsing(char **argv, t_alloc_vars *vars, int argc);
+char	check_death2(t_alloc_vars *vars, t_philo *philo, size_t timestamp);
 char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp,
 			char mode);
 char	can_i_wait_sixty(t_alloc_vars *vars, t_philo *philo,

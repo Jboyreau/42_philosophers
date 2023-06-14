@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   timestamp.c                                        :+:      :+:    :+:   */
+/*   timestamp_.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jboyreau <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 12:33:23 by jboyreau          #+#    #+#             */
-/*   Updated: 2023/06/02 12:33:51 by jboyreau         ###   ########.fr       */
+/*   Updated: 2023/06/14 03:54:02 by jboyreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,10 @@ char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		usleep(TINY_SLEEP);
 		i += TINY_SLEEP;
 	}
-	if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
+	(*philo).time_to_wait = end - (i - TINY_SLEEP);
+	if (check_death2(vars, philo, *timestamp) == ZERO)
 		return (ZERO);
-	usleep(end - (i - TINY_SLEEP));
+	usleep((*philo).time_to_wait);
 	usleep(FIVE_H);
 	return (ONE);
 }
