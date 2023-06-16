@@ -25,18 +25,28 @@
 
 char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 {
+	size_t		i;
+	size_t		end;
+
 	if (*((*vars).params + TWO) <= *((*vars).params + THREE))
 	{
-		if (check_death(vars, philo, *timestamp) == ZERO)
+		if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
 			return (ZERO);
 		return (usleep(FIVE_H), ONE);
 	}
+	end = (*((*vars).micros + TIME_EAT) - *((*vars).micros + TIME_SLEEP));
+	i = TINY_SLEEP;
+	while (i < end)
+	{
+		if (check_death(vars, philo, *timestamp, ONE) == ZERO)
+			return (ZERO);
+		usleep(TINY_SLEEP);
+		i += TINY_SLEEP;
+	}
+	(*philo).time_to_wait = end - (i - TINY_SLEEP);
 	if (check_death2(vars, philo, *timestamp) == ZERO)
 		return (ZERO);
-	(*philo).time_to_wait = ((*((*vars).micros + TIME_EAT)
-				- *((*vars).micros + TIME_SLEEP)) + (size_t)FIVE_H);
 	usleep((*philo).time_to_wait);
-	if (check_death(vars, philo, *timestamp) == ZERO)
-		return (ZERO);
+	usleep(FIVE_H);
 	return (ONE);
 }

@@ -34,7 +34,7 @@
 static char	wait_r(t_alloc_vars *vars, t_philo *philo,
 size_t p, size_t new_timestamp)
 {
-	new_timestamp += (*((*vars).params + ONE) - p) + ONE;
+	new_timestamp += *((*vars).params + ONE) - p;
 	p = (p << F) + (p << E) + (p << D) + (p << C) + (p << B) + (p << A);
 	if (p + (*philo).time_to_wait > *((*vars).micros))
 	{
@@ -43,10 +43,6 @@ size_t p, size_t new_timestamp)
 		(*vars).report = ONE;
 		pthread_mutex_unlock(&((*vars).mutex_report));
 		pthread_mutex_lock(&((*vars).mutex_stdout));
-		pthread_mutex_lock(&((*vars).death_mutex));
-		if ((*vars).death)
-			return (pthread_mutex_unlock(&((*vars).death_mutex)), ZERO);
-		pthread_mutex_unlock(&((*vars).death_mutex));
 		printf("%ldms %d died\n", new_timestamp - (*philo).ts, (*philo).num);
 		pthread_mutex_unlock(&((*vars).mutex_stdout));
 		return (ZERO);
@@ -78,7 +74,28 @@ char	check_death2(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
 		return (ZERO);
 	}
 	if (wait_r(vars, philo, new_timestamp - timestamp, new_timestamp) == ZERO)
+			return (ZERO);
+	return (ONE);
+}
+
+char	can_i_wait_sixty(t_alloc_vars *vars, t_philo *philo,
+size_t timestamp, size_t new_timestamp)
+{
+	size_t	past_time;
+
+	past_time = (new_timestamp - timestamp);
+	if (past_time + SIXTY > *((*vars).params + ONE))
+	{
+		usleep(*((*vars).micros + TIME_DEATH) - (past_time * KILO));
+		new_timestamp += *((*vars).params + ONE) - past_time;
+		pthread_mutex_lock(&((*vars).mutex_report));
+		(*vars).report = ONE;
+		pthread_mutex_unlock(&((*vars).mutex_report));
+		pthread_mutex_lock(&((*vars).mutex_stdout));
+		printf("%ldms %d died\n", new_timestamp - (*philo).ts, (*philo).num);
+		pthread_mutex_unlock(&((*vars).mutex_stdout));
 		return (ZERO);
+	}
 	return (ONE);
 }
 
@@ -88,7 +105,7 @@ char	take_fork_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		return (ZERO);
 	pthread_mutex_lock(((*philo).next_fork));
 	pthread_mutex_lock(&((*philo).fork));
-	if (check_death(vars, philo, *timestamp) == ZERO)
+	if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
 	{
 		pthread_mutex_unlock(&((*philo).fork));
 		return (pthread_mutex_unlock(((*philo).next_fork)), ZERO);

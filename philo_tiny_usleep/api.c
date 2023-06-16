@@ -30,7 +30,8 @@
 #define KILO 1000
 #define TINY_SLEEP 60000
 
-char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
+char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp,
+char mode)
 {
 	t_timeval	t;
 	size_t		new_timestamp;
@@ -53,32 +54,55 @@ char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp)
 		pthread_mutex_unlock(&((*vars).mutex_stdout));
 		return (ZERO);
 	}
+	if (mode == ONE)
+		if (can_i_wait_sixty(vars, philo, timestamp, new_timestamp) == ZERO)
+			return (ZERO);
 	return (ONE);
 }
 
 char	sleep_(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 {
-	(*philo).time_to_wait = *((*vars).micros + TIME_SLEEP);
+	size_t		i;
+	size_t		end;
+
 	if (print_sleep((*philo).num, vars, philo) == ZERO)
 		return (ZERO);
+	end = *((*vars).micros + TIME_SLEEP);
+	i = TINY_SLEEP;
+	while (i < end)
+	{
+		if (check_death(vars, philo, *timestamp, ONE) == ZERO)
+			return (ZERO);
+		usleep(TINY_SLEEP);
+		i += TINY_SLEEP;
+	}
+	(*philo).time_to_wait = end - (i - TINY_SLEEP);
 	if (check_death2(vars, philo, *timestamp) == ZERO)
 		return (ZERO);
 	usleep((*philo).time_to_wait);
-	if (check_death(vars, philo, *timestamp) == ZERO)
-		return (ZERO);
 	return (ONE);
 }
 
 char	eat(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 {
-	(*philo).time_to_wait = *((*vars).micros + TIME_EAT);
+	size_t		i;
+	size_t		end;
+
 	if (print_eat((*philo).num, vars, timestamp, philo) == ZERO)
 		return (ZERO);
+	end = *((*vars).micros + TIME_EAT);
+	i = TINY_SLEEP;
+	while (i < end)
+	{
+		if (check_death(vars, philo, *timestamp, ONE) == ZERO)
+			return (ZERO);
+		usleep(TINY_SLEEP);
+		i += TINY_SLEEP;
+	}
+	(*philo).time_to_wait = end - (i - TINY_SLEEP);
 	if (check_death2(vars, philo, *timestamp) == ZERO)
-		return (ZERO);
+		return (ZERO);	
 	usleep((*philo).time_to_wait);
-	if (check_death(vars, philo, *timestamp) == ZERO)
-		return (ZERO);
 	++((*philo).eat_count);
 	return (ONE);
 }
@@ -93,14 +117,14 @@ char	can_i_wait(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		&& (*((*vars).params) % TWO))
 	{
 		gettimeofday(&t, NULL);
-		new_timestamp = (KILO * t.tv_sec) + (t.tv_usec / (size_t)KILO);
+		new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
+			+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
+			+ (t.tv_usec / (size_t)KILO);
 		nt = new_timestamp - *timestamp;
 		if (equal_or_not((*vars).params, nt))
 		{
-			usleep(*((*vars).micros) - (nt * KILO));
-			if (check_death(vars, philo, *timestamp) == ZERO)
-				return (ZERO);
-			new_timestamp += (*((*vars).params + ONE) - nt) + ONE;
+			(usleep(*((*vars).micros) - (nt * KILO)), gettimeofday(&t, NULL));
+			new_timestamp = KILO * t.tv_sec + (t.tv_usec / (size_t)KILO);
 			(pthread_mutex_lock(&((*vars).mutex_report)), (*vars).report = ONE);
 			pthread_mutex_unlock(&((*vars).mutex_report));
 			pthread_mutex_lock(&((*vars).mutex_stdout));
@@ -117,7 +141,7 @@ char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		return (ZERO);
 	pthread_mutex_lock(&((*philo).fork));
 	pthread_mutex_lock(((*philo).next_fork));
-	if (check_death(vars, philo, *timestamp) == ZERO)
+	if (check_death(vars, philo, *timestamp, ZERO) == ZERO)
 	{
 		pthread_mutex_unlock(((*philo).next_fork));
 		return (pthread_mutex_unlock(&((*philo).fork)), ZERO);

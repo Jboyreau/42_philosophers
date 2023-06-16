@@ -43,6 +43,7 @@ typedef struct philosopher
 {
 	unsigned int	num;
 	unsigned int	eat_count;
+	size_t			last_eat;
 	size_t			ts;
 	size_t			time_to_wait;
 	pthread_t		id;
@@ -78,7 +79,10 @@ char	print_think(unsigned int id, t_alloc_vars *vars, t_philo *philo,
 char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	parsing(char **argv, t_alloc_vars *vars, int argc);
 char	check_death2(t_alloc_vars *vars, t_philo *philo, size_t timestamp);
-char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp);
+char	check_death(t_alloc_vars *vars, t_philo *philo, size_t timestamp,
+			char mode);
+char	can_i_wait_sixty(t_alloc_vars *vars, t_philo *philo,
+			size_t timestamp, size_t new_timestamp);
 char	equal_or_not(unsigned int *params, unsigned int nt);
 char	can_i_wait(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	take_fork(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
