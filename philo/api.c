@@ -97,10 +97,10 @@ char	can_i_wait(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 		nt = new_timestamp - *timestamp;
 		if (equal_or_not((*vars).params, nt))
 		{
-			usleep(*((*vars).micros) - (nt * KILO));
+			(usleep(*((*vars).micros) - (nt * KILO)), gettimeofday(&t, NULL));
 			if (check_death(vars, philo, *timestamp) == ZERO)
 				return (ZERO);
-			new_timestamp += (*((*vars).params + ONE) - nt) + ONE;
+			new_timestamp = (KILO * t.tv_sec) + (t.tv_usec / (size_t)KILO);
 			(pthread_mutex_lock(&((*vars).mutex_report)), (*vars).report = ONE);
 			pthread_mutex_unlock(&((*vars).mutex_report));
 			pthread_mutex_lock(&((*vars).mutex_stdout));

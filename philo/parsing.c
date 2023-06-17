@@ -80,7 +80,7 @@ static void	the_single_one_must_die(t_alloc_vars *vars)
 static char	alloc(t_alloc_vars *vars, size_t nb_philos, int argc)
 {
 	if (nb_philos == ZERO)
-		return (ZERO);
+		return (printf("The number of philosophers can't be NULL.\n"), ZERO);
 	(*vars).params = malloc((argc) * sizeof(size_t));
 	if ((*vars).params == NULL)
 		return (ZERO);
@@ -99,7 +99,7 @@ char	parsing(char **argv, t_alloc_vars *vars, int argc)
 	static int	j = LOOP_START;
 
 	if (argc != NB_PARAM && argc != NB_PARAM_)
-		return (ZERO);
+		return (printf("Only 5 or 6 agurments must be set.\n"), ZERO);
 	if (alloc(vars, ft_atolu(*(argv + ONE)), --argc) == ZERO)
 		return (ZERO);
 	while (++j < argc)
@@ -108,7 +108,10 @@ char	parsing(char **argv, t_alloc_vars *vars, int argc)
 			return (ZERO);
 		*((*vars).params + j) = ft_atolu(*(argv + j + ONE));
 		if (*((*vars).params + j) == ZERO)
+		{
+			printf("NUll or less, and non numerical values are forbiden.\n");
 			return (ZERO);
+		}
 	}
 	j = ZERO;
 	while (++j < INDEX_LAST_DURATION)

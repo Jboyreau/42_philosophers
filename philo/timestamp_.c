@@ -31,10 +31,10 @@ char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp)
 			return (ZERO);
 		return (usleep(FIVE_H), ONE);
 	}
-	if (check_death2(vars, philo, *timestamp) == ZERO)
-		return (ZERO);
 	(*philo).time_to_wait = ((*((*vars).micros + TIME_EAT)
 				- *((*vars).micros + TIME_SLEEP)) + (size_t)FIVE_H);
+	if (check_death2(vars, philo, *timestamp) == ZERO)
+		return (ZERO);
 	usleep((*philo).time_to_wait);
 	if (check_death(vars, philo, *timestamp) == ZERO)
 		return (ZERO);
