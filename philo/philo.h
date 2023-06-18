@@ -75,6 +75,8 @@ char	print_eat(unsigned int id, t_alloc_vars *vars, size_t *timestamp,
 			t_philo *philo);
 char	print_think(unsigned int id, t_alloc_vars *vars, t_philo *philo,
 			size_t *timestamp);
+void	pn(size_t n, char *tab, unsigned char *i);
+void	display(size_t n, int id, char *str);
 char	wait_n_watch(t_alloc_vars *vars, t_philo *philo, size_t *timestamp);
 char	parsing(char **argv, t_alloc_vars *vars, int argc);
 char	check_death2(t_alloc_vars *vars, t_philo *philo, size_t timestamp);

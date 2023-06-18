@@ -36,13 +36,11 @@
 #define EIGHT 8
 #define FOUR 4
 
-void	pn(size_t n)
+void	pn(size_t n, char *tab, unsigned char *i)
 {
-	int		i;
 	size_t	power;
 	size_t	save_n;
 	size_t	result;
-	char	digits[SIZE_DIGITS];
 
 	save_n = n / (size_t)TEN;
 	power = ONE;
@@ -51,16 +49,13 @@ void	pn(size_t n)
 		save_n /= (size_t)TEN;
 		power = (power << THREE) + (power << ONE);
 	}
-	i = M_ONE;
 	while (power)
 	{
 		result = n / power;
-		*(digits + (++i)) = FOURTY_EIGHT + result;
+		*(tab + (++(*i))) = FOURTY_EIGHT + result;
 		n = n - (result * power);
 		power /= (size_t)TEN;
 	}
-	*(digits + (++i)) = ZERO;
-	write(ONE, digits, i);
 }
 
 char	print_fork(unsigned int id, t_alloc_vars *vars, t_philo *philo)
@@ -79,8 +74,7 @@ char	print_fork(unsigned int id, t_alloc_vars *vars, t_philo *philo)
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 		+ (t.tv_usec / (size_t)KILO);
-	(pn(new_timestamp - (*philo).ts), write(ONE, "ms ", THREE), pn(id));
-	write(ONE, " has taken a fork\n", EIGHTEEN);
+	display(new_timestamp - (*philo).ts, id, " has taken a fork\n");
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
 	return (ONE);
 }
@@ -102,8 +96,7 @@ t_philo *philo)
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 		+ (t.tv_usec / (size_t)KILO);
-	(pn(new_timestamp - (*philo).ts), write(ONE, "ms ", THREE), pn(id));
-	write(ONE, " is eating\n", ELEVEN);
+	display(new_timestamp - (*philo).ts, id, " is eating\n");
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
 	return (*timestamp = new_timestamp, ONE);
 }
@@ -124,8 +117,7 @@ char	print_sleep(unsigned int id, t_alloc_vars *vars, t_philo *philo)
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 		+ (t.tv_usec / (size_t)KILO);
-	(pn(new_timestamp - (*philo).ts), write(ONE, "ms ", THREE), pn(id));
-	write(ONE, " is sleeping\n", THIRTEEN);
+	display(new_timestamp - (*philo).ts, id, " is sleeping\n");
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
 	return (ONE);
 }
@@ -140,8 +132,7 @@ size_t *timestamp)
 	new_timestamp = (t.tv_sec << F) + (t.tv_sec << E) + (t.tv_sec << D)
 		+ (t.tv_sec << C) + (t.tv_sec << B) + (t.tv_sec << A)
 		+ (t.tv_usec / (size_t)KILO);
-	(pn(new_timestamp - (*philo).ts), write(ONE, "ms ", THREE), pn(id));
-	write(ONE, " is thinking\n", THIRTEEN);
+	display(new_timestamp - (*philo).ts, id, " is thinking\n");
 	pthread_mutex_unlock(&((*vars).mutex_stdout));
 	if (wait_n_watch(vars, philo, timestamp) == ZERO)
 		return (ZERO);
